@@ -7,7 +7,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 SCOPES = ['https://www.googleapis.com/auth/generative-language.retriever']
-api_key = "AIzaSyDWcQQWPVk36q3rjl9nuo8l7IEB_zCv6_c"
+api_key = "your api key"
 def generate_token():
     flow = InstalledAppFlow.from_client_secrets_file(
         './client_secret.json', SCOPES
