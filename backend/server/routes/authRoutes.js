@@ -5,7 +5,7 @@ import {
   register,
   getUser,
   verifyEmail,
-} from "../controllers/AuthController.js";
+} from "../controllers/authController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 router.post("/auth/login", login);
 router.post("/auth/register", register);
