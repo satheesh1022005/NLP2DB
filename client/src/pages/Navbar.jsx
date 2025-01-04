@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./NavBar.css";
+import "./Navbar.css";
 import logo from "../assets/logo.webp";
 import { AiOutlineClose } from "react-icons/ai";
 
