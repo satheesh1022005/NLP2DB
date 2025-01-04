@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:8080/api/auth";
+const API_URL = "https://nlp2db.onrender.com/api/auth";
 
 const getAuthHeader = () => {
   const user = JSON.parse(localStorage.getItem("user"));

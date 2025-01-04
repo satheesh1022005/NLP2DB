@@ -286,26 +286,26 @@ function generateCreateTableSQL(data) {
   return sqlStatements;
 }
 
-const createDB = async () => {
-  const query = generateCreateTableSQL(erDiagram); // Generate the SQL query for creating tables
-  //const dbName = "";
-  try {
-    // Send request to create the database and tables
-    const response = await axios.post(
-      "http://localhost:8080/create-database-tables",
-      {
-        dbName,
-        queries: [query], // Assuming you only have one query for now. Modify for multiple queries if needed.
-      }
-    );
-    // Handle successful response
-    setDbCreationStatus("Database and tables created successfully!");
-    setViewEngine(true);
-  } catch (error) {
-    // Handle error during DB creation
-    setDbCreationStatus("Error creating database: " + error.message);
-  }
-};
+// const createDB = async () => {
+//   const query = generateCreateTableSQL(erDiagram); // Generate the SQL query for creating tables
+//   //const dbName = "";
+//   try {
+//     // Send request to create the database and tables
+//     const response = await axios.post(
+//       "http://localhost:8080/create-database-tables",
+//       {
+//         dbName,
+//         queries: [query], // Assuming you only have one query for now. Modify for multiple queries if needed.
+//       }
+//     );
+//     // Handle successful response
+//     setDbCreationStatus("Database and tables created successfully!");
+//     setViewEngine(true);
+//   } catch (error) {
+//     // Handle error during DB creation
+//     setDbCreationStatus("Error creating database: " + error.message);
+//   }
+// };
 
 const exportToPNG = (setView) => {
   setView(true);

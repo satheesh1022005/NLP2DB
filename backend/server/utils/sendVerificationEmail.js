@@ -11,7 +11,7 @@ export async function sendVerificationEmail(email, verificationToken) {
       },
     });
 
-    const verificationUrl = `http://localhost:8080/api/auth/verify-email/${verificationToken}`;
+    const verificationUrl = `https://nlp2db.onrender.com/api/auth/verify-email/${verificationToken}`;
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
