@@ -103,13 +103,10 @@ const Deploy = ({ erDiagram, id, setDeployView }) => {
 
     setLoading(true);
     try {
-      const response = await axiosHeader.post(
-        "http://localhost:8080/api/create-connection",
-        {
-          projectId: id,
-          connectionDetails,
-        }
-      );
+      const response = await axiosHeader.post("/create-connection", {
+        projectId: id,
+        connectionDetails,
+      });
 
       if (response.data.success) {
         setConnectionStatus("Connected to the database successfully!");
@@ -143,7 +140,7 @@ const Deploy = ({ erDiagram, id, setDeployView }) => {
     setLoading(true);
     try {
       const response = await axiosHeader.post(
-        `http://localhost:8080/api/create-table/${connectionDetails.databaseId}`,
+        `/create-table/${connectionDetails.databaseId}`,
         { queries: sqlQueries }
       );
 
@@ -161,7 +158,7 @@ const Deploy = ({ erDiagram, id, setDeployView }) => {
   const terminateConnection = async () => {
     try {
       const response = await axiosHeader.delete(
-        `http://localhost:8080/api/terminate-connection/${connectionDetails.databaseId}`
+        `/terminate-connection/${connectionDetails.databaseId}`
       );
       if (response.data.success) {
         toast("Connection terminated successfully!", { autoClose: 2000 });
@@ -178,9 +175,7 @@ const Deploy = ({ erDiagram, id, setDeployView }) => {
   useEffect(() => {
     async function fetchConnectionDetails() {
       try {
-        const response = await axiosHeader.get(
-          "http://localhost:8080/api/get-connection-details/" + id
-        );
+        const response = await axiosHeader.get("/get-connection-details/" + id);
         const connectionDetailsData = response.data.connection_details;
         //console.log(connectionDetailsData);
         setConnectionDetails({
