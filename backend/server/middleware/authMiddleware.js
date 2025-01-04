@@ -14,7 +14,7 @@ const authMiddleware = async (req, res, next) => {
     req.user = decoded.user;
 
     // Query to check if the user exists in the database
-    const [rows] = await pool.query("SELECT * FROM Users WHERE user_id = ?", [
+    const [rows] = await pool.query("SELECT * FROM users WHERE user_id = ?", [
       req.user.id,
     ]);
 
