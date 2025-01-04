@@ -1,13 +1,15 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import time
 import os
 import requests
 import google.generativeai as genai
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.exceptions import RefreshError
 SCOPES = ['https://www.googleapis.com/auth/generative-language.retriever']
-api_key = "your api key"
+api_key = "AIzaSyDWcQQWPVk36q3rjl9nuo8l7IEB_zCv6_c"
 def generate_token():
     flow = InstalledAppFlow.from_client_secrets_file(
         './client_secret.json', SCOPES
@@ -23,6 +25,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 # Define the Google API scope
 # Function to load OAuth2 credentials
+"""
 def load_creds():
     creds = None
     if os.path.exists('token.json'):
@@ -38,6 +41,42 @@ def load_creds():
             token.write(creds.to_json())
     return creds
 # Define the Flask route to generate the ER diagram
+"""
+
+
+def load_creds():
+    creds = None
+    try:
+        # Check if token.json exists
+        if os.path.exists('token.json'):
+            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        
+        # If credentials are valid, return a success response
+        if creds and creds.valid:
+            return jsonify({"success":True,"message": "Credentials are valid"}), 200
+        
+        # If credentials are expired but refreshable, refresh them
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+            # Save the refreshed credentials back to token.json
+            with open('token.json', 'w') as token_file:
+                token_file.write(creds.to_json())
+            return jsonify({"success":True,"message": "Credentials refreshed"}), 200
+        
+        # If credentials are invalid or missing, initiate the auth flow
+        flow = InstalledAppFlow.from_client_secrets_file(
+            'client_secret.json', SCOPES)
+        auth_url, _ = flow.authorization_url(prompt='consent')
+        return jsonify({"success":False,"auth_url": auth_url}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+# load_creds()
+@app.route('/get-auth-url', methods=['GET'])
+def get_auth_url():
+    response = load_creds()
+    return response
+
 @app.route('/generate-er', methods=['POST'])
 def generate_er():
     # Get input data from the POST request
@@ -121,6 +160,7 @@ def generate_er():
 
 @app.route('/generate-er-test', methods=['POST'])
 def generate_er_test():
+    time.sleep(3)
     data="```json\n{\n    \"entities\": [\n        {\n            \"name\": \"Team\",\n            \"primaryKey\": \"teamId\",\n            \"attributes\": [\n                { \"name\": \"teamId\", \"type\": \"int\" },\n                { \"name\": \"name\", \"type\": \"string\" },\n                { \"name\": \"city\", \"type\": \"string\" },\n                { \"name\": \"conference\", \"type\": \"string\" },\n                { \"name\": \"division\", \"type\": \"string\" },\n                { \"name\": \"wins\", \"type\": \"int\" },\n                { \"name\": \"losses\", \"type\": \"int\" },\n                { \"name\": \"ties\", \"type\": \"int\" },\n                { \"name\": \"points\", \"type\": \"int\" }\n            ]\n        },\n        {\n            \"name\": \"Player\",\n            \"primaryKey\": \"playerId\",\n            \"attributes\": [\n                { \"name\": \"playerId\", \"type\": \"int\" },\n                { \"name\": \"name\", \"type\": \"string\" },\n                { \"name\": \"number\", \"type\": \"int\" },\n                { \"name\": \"position\", \"type\": \"string\" },\n                { \"name\": \"goals\", \"type\": \"int\" },\n                { \"name\": \"assists\", \"type\": \"int\" },\n                { \"name\": \"teamId\", \"type\": \"int\" }\n            ]\n        },\n        {\n            \"name\": \"Game\",\n            \"primaryKey\": \"gameId\",\n            \"attributes\": [\n                { \"name\": \"gameId\", \"type\": \"int\" },\n                { \"name\": \"date\", \"type\": \"string\" },\n                { \"name\": \"homeTeamId\", \"type\": \"int\" },\n                { \"name\": \"awayTeamId\", \"type\": \"int\" },\n                { \"name\": \"homeTeamScore\", \"type\": \"int\" },\n                { \"name\": \"awayTeamScore\", \"type\": \"int\" }\n            ]\n        },\n        {\n            \"name\": \"Stats\",\n            \"primaryKey\": \"statsId\",\n            \"attributes\": [\n                { \"name\": \"statsId\", \"type\": \"int\" },\n                { \"name\": \"playerId\", \"type\": \"int\" },\n                { \"name\": \"gameId\", \"type\": \"int\" },\n                { \"name\": \"goals\", \"type\": \"int\" },\n                { \"name\": \"assists\", \"type\": \"int\" },\n                { \"name\": \"shots\", \"type\": \"int\" },\n                { \"name\": \"penaltyMinutes\", \"type\": \"int\" }\n            ]\n        }\n    ],\n    \"relationships\": [\n        {\n            \"from\": \"Player\",\n            \"to\": \"Team\",\n            \"type\": \"plays for\",\n            \"cardinality\": \"many-to-one\"\n        },\n        {\n            \"from\": \"Game\",\n            \"to\": \"Team\",\n            \"type\": \"involves\",\n            \"cardinality\": \"many-to-one\"\n        },\n        {\n            \"from\": \"Stats\",\n            \"to\": \"Player\",\n            \"type\": \"belongs to\",\n            \"cardinality\": \"many-to-one\"\n        },\n        {\n            \"from\": \"Game\",\n            \"to\": \"Stats\",\n            \"type\": \"has\",\n            \"cardinality\": \"one-to-many\"\n        }\n    ]\n}\n```"
     return jsonify({"er_diagram": data})    
 
@@ -186,7 +226,12 @@ def generate_er_prompt():
     # Generate the response based on the prompt
     response = model.generate_content(prompt)
     return jsonify({"er_model_prompt": response.text})
-
+@app.route('/generate-er-prompt-test', methods=['POST'])
+def generate_er_prompt_test():
+    # Test data
+    time.sleep(3)
+    data="test data"
+    return jsonify({"er_model_prompt": data})
 def create_er_model_prompt(requirement):
     """
     Construct a prompt based on user requirements to guide the NLP2ER model.
@@ -204,3 +249,4 @@ def create_er_model_prompt(requirement):
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True, port=4000)
+    
