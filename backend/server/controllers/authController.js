@@ -15,7 +15,7 @@ export async function register(req, res) {
   try {
     // Check if user already exists
     const [userExists] = await pool.query(
-      "SELECT * FROM Users WHERE email = ? OR name = ?",
+      "SELECT * FROM users WHERE email = ? OR name = ?",
       [email, name]
     );
     if (userExists.length > 0) {
@@ -34,7 +34,7 @@ export async function register(req, res) {
     await sendVerificationEmail(email, verificationToken);
     // Create new user with verification token and expiry time
     const [result] = await pool.query(
-      "INSERT INTO Users (name, email, password, verification_token, token_expiry) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO users (name, email, password, verification_token, token_expiry) VALUES (?, ?, ?, ?, ?)",
       [name, email, hashedPassword, verificationToken, tokenExpiry]
     );
 
@@ -58,7 +58,7 @@ export async function login(req, res) {
 
   try {
     // Check if user exists
-    const [user] = await pool.query("SELECT * FROM Users WHERE email = ?", [
+    const [user] = await pool.query("SELECT * FROM users WHERE email = ?", [
       email,
     ]);
     if (user.length === 0) {
@@ -76,7 +76,7 @@ export async function login(req, res) {
       newExpiry.setHours(newExpiry.getHours() + 1);
 
       // Update the expiry time in the database
-      await pool.query("UPDATE Users SET token_expiry = ? WHERE email = ?", [
+      await pool.query("UPDATE users SET token_expiry = ? WHERE email = ?", [
         newExpiry,
         email,
       ]);
@@ -113,7 +113,7 @@ export async function login(req, res) {
 
 export async function getUser(req, res) {
   try {
-    const [user] = await pool.query("SELECT * FROM Users WHERE user_id = ?", [
+    const [user] = await pool.query("SELECT * FROM users WHERE user_id = ?", [
       req.user.id,
     ]);
     res.json(user[0]);
@@ -130,7 +130,7 @@ export async function verifyEmail(req, res) {
   try {
     // Check if the token exists in the database and is valid
     const [user] = await pool.query(
-      "SELECT * FROM Users WHERE verification_token = ? AND token_expiry > NOW()",
+      "SELECT * FROM users WHERE verification_token = ? AND token_expiry > NOW()",
       [token]
     );
 
@@ -140,7 +140,7 @@ export async function verifyEmail(req, res) {
 
     // Update user to mark as verified
     await pool.query(
-      "UPDATE Users SET is_verified = true, verification_token = NULL, token_expiry = NULL WHERE verification_token = ?",
+      "UPDATE users SET is_verified = true, verification_token = NULL, token_expiry = NULL WHERE verification_token = ?",
       [token]
     );
 

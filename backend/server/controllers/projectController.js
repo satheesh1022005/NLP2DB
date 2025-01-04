@@ -9,7 +9,7 @@ export const createProject = async (req, res) => {
     }
     //check if the name already exists
     const [existingProject] = await pool.query(
-      "SELECT * FROM Projects WHERE project_name = ? AND user_id = ?",
+      "SELECT * FROM projects WHERE project_name = ? AND user_id = ?",
       [name, userId]
     );
 
@@ -19,7 +19,7 @@ export const createProject = async (req, res) => {
         .json({ msg: "Project name already exists for this user" });
     }
     const [result] = await pool.query(
-      "INSERT INTO Projects (project_name, description, user_id) VALUES (?, ?, ?)",
+      "INSERT INTO projects (project_name, description, user_id) VALUES (?, ?, ?)",
       [name, description, userId]
     );
 
@@ -38,7 +38,7 @@ export const getProjects = async (req, res) => {
   const { id } = req.user;
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM Projects WHERE user_id = ?",
+      "SELECT * FROM projects WHERE user_id = ?",
       [id]
     );
     res.json(rows);
@@ -52,7 +52,7 @@ export const getProject = async (req, res) => {
   const { id } = req.params;
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM Projects WHERE project_id = ?",
+      "SELECT * FROM projects WHERE project_id = ?",
       [id]
     );
     res.status(200).json(rows[0]);
@@ -87,7 +87,7 @@ export const updateProject = async (req, res) => {
 
     // Check if the project exists
     const [rows] = await pool.query(
-      "SELECT * FROM Projects WHERE project_id = ? AND user_id = ?",
+      "SELECT * FROM projects WHERE project_id = ? AND user_id = ?",
       [id, userId]
     );
     if (rows.length === 0) {
@@ -96,7 +96,7 @@ export const updateProject = async (req, res) => {
 
     // Update the project
     const [result] = await pool.query(
-      "UPDATE Projects SET er_object = ? WHERE project_id = ?",
+      "UPDATE projects SET er_object = ? WHERE project_id = ?",
       [jsonString, id]
     );
 
@@ -117,7 +117,7 @@ export const deleteProject = async (req, res) => {
   try {
     // Check if the project exists
     const [rows] = await pool.query(
-      "SELECT * FROM Projects WHERE project_id = ? AND user_id = ?",
+      "SELECT * FROM projects WHERE project_id = ? AND user_id = ?",
       [id, userId]
     );
     if (rows.length === 0) {
@@ -125,7 +125,7 @@ export const deleteProject = async (req, res) => {
     }
     // Delete the project
     const [result] = await pool.query(
-      "DELETE FROM Projects WHERE project_id = ?",
+      "DELETE FROM projects WHERE project_id = ?",
       [id]
     );
     if (result.affectedRows === 1) {
@@ -143,7 +143,7 @@ export const getHistory = async (req, res) => {
   const { projectId } = req.params;
 
   try {
-    const query = "SELECT * FROM Queries WHERE project_id = ?";
+    const query = "SELECT * FROM queries WHERE project_id = ?";
 
     const [results] = await pool.query(query, [projectId]);
 
@@ -162,7 +162,7 @@ export const getHistory = async (req, res) => {
 export const createHistory = async (req, res) => {
   const { projectId, queryText, queryResult } = req.body;
 
-  const query = `INSERT INTO Queries (project_id, query_text, query_result) VALUES (?, ?, ?)`;
+  const query = `INSERT INTO queries (project_id, query_text, query_result) VALUES (?, ?, ?)`;
 
   try {
     const [results] = await pool.query(query, [

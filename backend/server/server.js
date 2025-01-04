@@ -7,7 +7,6 @@ import { pool } from "./config/db.js";
 import deployRoutes from "./routes/deployRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
-
 // Initialize Express app
 const app = express();
 const port = process.env.PORT || 8080;
