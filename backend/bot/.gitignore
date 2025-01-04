@@ -1,1 +1,4 @@
 .env
+client_secret.json
+GoogleAuthentication.bat
+backend/bot/token.json
