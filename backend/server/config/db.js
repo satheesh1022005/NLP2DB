@@ -16,14 +16,5 @@ const dbConfig = {
 
 // Create MySQL connection pool
 const pool = mysql.createPool(dbConfig).promise();
-pool
-  .getConnection()
-  .then((connection) => {
-    console.log("Database connection established successfully.");
-    connection.release(); // Release the connection back to the pool
-  })
-  .catch((err) => {
-    console.error("Error connecting to the database:", err.message);
-  });
 // Export pool as a named export
 export { pool };
