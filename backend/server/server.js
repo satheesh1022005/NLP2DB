@@ -18,7 +18,9 @@ app.use(
   })
 );
 app.use(express.json());
-
+app.get("/", (req, res) => {
+  return res.json({ msg: "Server is running" });
+});
 app.use("/api", deployRoutes);
 app.use("/api", authRoutes);
 app.use("/api", projectRoutes);
