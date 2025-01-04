@@ -1,20 +1,21 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
+dotenv.config();
 import authMiddleware from "./middleware/authMiddleware.js"; // Import the middleware
 import { pool } from "./config/db.js";
 import deployRoutes from "./routes/deployRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
-import dotenv from "dotenv";
-dotenv.config();
+
 // Initialize Express app
 const app = express();
 const port = process.env.PORT || 8080;
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow requests from this origin
-    credentials: true, // Allow cookies and other credentials
+    origin: "*",
+    credentials: true,
   })
 );
 app.use(express.json());

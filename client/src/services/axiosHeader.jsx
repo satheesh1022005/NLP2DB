@@ -1,7 +1,7 @@
 import axios from "axios";
 // Create an Axios instance
 const axiosHeader = axios.create({
-  baseURL: "http://localhost:8080/api/", // Replace with your API base URL
+  baseURL: "https://nlp2db.onrender.com/api/", // Replace with your API base URL
 });
 // Add a request interceptor
 axiosHeader.interceptors.request.use(
