@@ -24,14 +24,14 @@ const ErDiagramFetcher = ({
     setChatHistory((prev) => [...prev, { type: "user", text: input }]);
     try {
       const data = await axios.post(
-        "https://nlp2db-bot.onrender.com/generate-er-prompt-test",
+        "https://nlp2db-bot.onrender.com/generate-er-prompt",
         {
           requirement: input,
         }
       );
       //console.log(data.data.er_model_prompt);
       const response = await axios.post(
-        "https://nlp2db-bot.onrender.com/generate-er-test",
+        "https://nlp2db-bot.onrender.com/generate-er",
         {
           description: data.data.er_model_prompt,
         }
