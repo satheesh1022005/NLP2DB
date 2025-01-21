@@ -28,57 +28,55 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 # Define the Google API scope
 # Function to load OAuth2 credentials
-"""
 def load_creds():
-    creds = None
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'client_secret.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-    return creds
-# Define the Flask route to generate the ER diagram
-"""
-
-
-def load_creds():
-    creds = None
     try:
+        creds = None
         # Check if token.json exists
         if os.path.exists('token.json'):
             creds = Credentials.from_authorized_user_file('token.json', SCOPES)
         
-        # If credentials are valid, return a success response
+        # If credentials are valid, return the creds object
         if creds and creds.valid:
-            return jsonify({"success":True,"message": "Credentials are valid"}), 200
+            return creds
         
         # If credentials are expired but refreshable, refresh them
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-            # Save the refreshed credentials back to token.json
-            with open('token.json', 'w') as token_file:
-                token_file.write(creds.to_json())
-            return jsonify({"success":True,"message": "Credentials refreshed"}), 200
+            try:
+                creds.refresh(Request())
+                # Save the refreshed credentials
+                with open('token.json', 'w') as token_file:
+                    token_file.write(creds.to_json())
+                return creds
+            except RefreshError:
+                # If refresh fails, generate new token
+                return generate_token()
         
-        # If credentials are invalid or missing, initiate the auth flow
-        flow = InstalledAppFlow.from_client_secrets_file(
-            'client_secret.json', SCOPES)
-        auth_url, _ = flow.authorization_url(prompt='consent')
-        return jsonify({"success":False,"auth_url": auth_url}), 200
+        # If no valid credentials, generate new ones
+        return generate_token()
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"Authentication error: {str(e)}")
+        raise
 # load_creds()
 @app.route('/get-auth-url', methods=['GET'])
 def get_auth_url():
-    response = load_creds()
-    return response
+    try:
+        if os.path.exists('token.json'):
+            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+            if creds and creds.valid:
+                return jsonify({"success": True, "message": "Credentials are valid"})
+            elif creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+                return jsonify({"success": True, "message": "Credentials refreshed"})
+        
+        # If we get here, we need new credentials
+        flow = InstalledAppFlow.from_client_secrets_file(
+            'client_secret.json', SCOPES)
+        auth_url, _ = flow.authorization_url(prompt='consent')
+        return jsonify({"success": False, "auth_url": auth_url})
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/generate-er', methods=['POST'])
 def generate_er():
