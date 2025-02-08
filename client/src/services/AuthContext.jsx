@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
         setUser(data.user);
       } catch (error) {
         //console.error("Token verification failed:", error);
-        await logoutService(navigate);
+        //await logoutService(navigate);
         setUser(null);
         navigate("/");
       } finally {

@@ -5,6 +5,7 @@ const API_URL = "https://nlp2db.onrender.com/api/auth";
 
 const getAuthHeader = () => {
   const user = JSON.parse(localStorage.getItem("user"));
+  //console.log(user);
   return user && user.token ? { "x-auth-token": user.token } : {};
 };
 export const register = async (userData) => {
@@ -13,12 +14,16 @@ export const register = async (userData) => {
 };
 
 export const verifyToken = async () => {
-  const response = await axios.get(`${API_URL}/verifyToken`, {
-    headers: getAuthHeader(),
-    withCredentials: true,
-  });
+  const headers = getAuthHeader();
+  console.log(headers);
+  if (!headers["x-auth-token"]) {
+    return null;
+  }
+
+  const response = await axios.get(`${API_URL}/verifyToken`, { headers });
   return response.data;
 };
+
 // export const verifyOtp = async (otpData) => {
 //   const response = await axios.post(`${API_URL}/verifyOTP`, otpData);
 //   return response.data;

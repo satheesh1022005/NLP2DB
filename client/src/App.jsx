@@ -24,6 +24,7 @@ function App() {
       try {
         const response = await axiosHeader.get("/auth/getUser");
         //localStorage.setItem("data", JSON.stringify(response.data));
+        console.log(response.data);
         setData(response.data); //Store the data in state
         //navigate("/dashboard/" + response.data.user_id);
       } catch (error) {
